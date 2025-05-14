@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Báo cáo giao dịch</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ngày</th>
+                <th>Sản phẩm</th>
+                <th>Loại giao dịch</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Tổng tiền</th>
+                <th>Nhà cung cấp</th>
+                <th>Số tham chiếu</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.date.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ transaction.product.name }}</td>
+                <td>
+                    {% if transaction.transaction_type == 'in' %}
+                    <span class="badge bg-success">Nhập kho</span>
+                    {% else %}
+                    <span class="badge bg-danger">Xuất kho</span>
+                    {% endif %}
+                </td>
+                <td>{{ transaction.quantity }}</td>
+                <td>{{ transaction.unit_price }}</td>
+                <td>{{ transaction.total_amount }}</td>
+                <td>{{ transaction.supplier.name if transaction.supplier else '-' }}</td>
+                <td>{{ transaction.reference_number or '-' }}</td>
+                <td>{{ transaction.notes or '-' }}</td>
+                <td>
+        </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="mb-3">
+    <button class="btn btn-success" onclick="printFullReport()">In báo cáo</button>
+</div>
+<script>
+    function printFullReport() {
+        // Kích hoạt tính năng in của trình duyệt
+        window.print();
+    }
+</script>
+
+{% endblock %}

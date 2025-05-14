@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Thêm danh mục mới</h1>
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="name" class="form-label">Tên danh mục</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="description" class="form-label">Mô tả</label>
+        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Thêm danh mục</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Hủy</a>
+</form>
+{% endblock %}

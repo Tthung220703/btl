@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Danh sách sản phẩm</h1>
+
+<!-- Ô tìm kiếm -->
+<div class="mb-3">
+    <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm sản phẩm..." onkeyup="filterProducts()">
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped" id="productTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Nhà cung cấp</th>
+                <th>Mô tả</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>
+                    {% if product.image %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="{{ product.name }}" style="width: 100px; height: auto;">
+                    {% else %}
+                    <span>Không có hình</span>
+                    {% endif %}
+                </td>
+                <td class="product-name">{{ product.name }}</td>
+                <td>{{ product.category.name if product.category else 'Không có danh mục' }}</td>
+                <td>
+                    {% set supplier = product.transactions[0].supplier if product.transactions else None %}
+                    {{ supplier.name if supplier else 'Không có nhà cung cấp' }}
+                </td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>
+                    <a href="{{ url_for('edit_product', id=product.id) }}" class="btn btn-sm btn-primary">Sửa</a>
+                    <a href="{{ url_for('delete_product', id=product.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">Xóa</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h2>Danh sách danh mục</h2>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tên danh mục</th>
+                <th>Mô tả</th>
+                <th>Thao tác</th> <!-- Thêm cột Thao tác -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                    <form action="{{ url_for('delete_category', id=category.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h2>Danh sách nhà cung cấp</h2>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tên nhà cung cấp</th>
+                <th>Người liên hệ</th>
+                <th>Số điện thoại</th>
+                <th>Thao tác</th> <!-- Thêm cột Thao tác -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers %}
+            <tr>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.contact_person }}</td>
+                <td>{{ supplier.phone }}</td>
+                <td>
+                    <form action="{{ url_for('delete_supplier', id=supplier.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này?')">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    function filterProducts() {
+        // Lấy giá trị từ ô tìm kiếm
+        const searchValue = document.getElementById('searchInput').value.toLowerCase();
+        const table = document.getElementById('productTable');
+        const rows = table.getElementsByTagName('tr');
+
+        // Lặp qua các hàng trong bảng (bỏ qua hàng tiêu đề)
+        for (let i = 1; i < rows.length; i++) {
+            const productNameCell = rows[i].getElementsByClassName('product-name')[0];
+            if (productNameCell) {
+                const productName = productNameCell.textContent.toLowerCase();
+                // Kiểm tra nếu tên sản phẩm chứa từ khóa tìm kiếm
+                if (productName.includes(searchValue)) {
+                    rows[i].style.display = ''; // Hiển thị hàng
+                } else {
+                    rows[i].style.display = 'none'; // Ẩn hàng
+                }
+            }
+        }
+    }
+</script>
+<style>
+    h2 {
+        margin-top: 30px;
+        color: #333;
+    }
+    .table {
+        margin-top: 15px;
+        background-color: #f9f9f9;
+    }
+    .table th {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+    }
+    .table td {
+        text-align: center;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Báo cáo tồn kho</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Số lượng hiện tại</th>
+                <th>Số lượng tối thiểu</th>
+                <th>Giá bán</th>
+                <th>Giá gốc</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.sku }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.min_quantity }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.cost_price }}</td>
+                <td>
+                    {% if product.quantity <= product.min_quantity %}
+                    <span class="badge bg-danger">Cần nhập hàng</span>
+                    {% else %}
+                    <span class="badge bg-success">Đủ hàng</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- Nút In báo cáo -->
+<div class="mb-3">
+    <button class="btn btn-success" onclick="printReport()">In báo cáo</button>
+</div>
+<script>
+    function printReport() {
+        // Ẩn các phần không cần thiết khi in (nếu có)
+        const elementsToHide = document.querySelectorAll('.btn, input, form');
+        elementsToHide.forEach(el => el.style.display = 'none');
+
+        // Kích hoạt tính năng in của trình duyệt
+        window.print();
+
+        // Hiển thị lại các phần đã ẩn sau khi in
+        elementsToHide.forEach(el => el.style.display = '');
+    }
+</script>
+{% endblock %}
